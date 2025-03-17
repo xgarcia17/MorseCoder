@@ -38,7 +38,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.zybooks.petadoption.data.Pet
-import com.zybooks.petadoption.data.PetDataSource
+import com.zybooks.petadoption.data.MorseCoderDataSource
 import com.zybooks.petadoption.data.PetGender
 import com.zybooks.petadoption.ui.theme.MorseCoderTheme
 import kotlinx.serialization.Serializable
@@ -235,7 +235,7 @@ fun DetailScreen(
 @Preview
 @Composable
 fun PreviewDetailScreen() {
-   val pet = PetDataSource().loadPets()[0]
+   val pet = MorseCoderDataSource().loadPets()[0]
    MorseCoderTheme {
       DetailScreen(
          petId = pet.id,
@@ -295,7 +295,7 @@ fun AdoptScreen(
 @Preview
 @Composable
 fun PreviewAdoptScreen() {
-   val pet = PetDataSource().loadPets()[0]
+   val pet = MorseCoderDataSource().loadPets()[0]
    MorseCoderTheme {
       AdoptScreen(pet.id)
    }
