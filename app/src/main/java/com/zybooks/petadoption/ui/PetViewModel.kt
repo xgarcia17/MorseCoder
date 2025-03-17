@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.zybooks.petadoption.data.MorseCoderDataSource
 import com.zybooks.petadoption.data.Pet
 
-class PetViewModel : ViewModel() {
+class MorseCoderViewModel : ViewModel() {
    val petList = MorseCoderDataSource().loadPets()
    var selectedPet by mutableStateOf(Pet())
 }

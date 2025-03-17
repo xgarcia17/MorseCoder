@@ -1,12 +1,16 @@
 package com.zybooks.petadoption.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -58,43 +62,65 @@ sealed class Routes {
    )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MorseCoderApp() {
    val navController = rememberNavController()
 
    NavHost(
       navController = navController,
-      startDestination = Routes.List
+      startDestination = "start_screen"
    ) {
-      composable<Routes.List> {
-         ListScreen(
-            onImageClick = { pet ->
-               navController.navigate(
-                  Routes.Detail(pet.id)
+      composable("start_screen") {
+         Scaffold(
+            topBar = {
+               MorseCoderAppBar(
+                  title = "Morse Coder",
+                  canNavigateBack = false,
                )
+            }
+         ) {
+            StartScreen(
+               onNavigateToList = { title ->
+                  // Navigate to the ListScreen with the appropriate title
+                  navController.navigate("list_screen/$title")
+               }
+            )
+         }
+      }
+
+      composable("list_screen/{title}") { backstackEntry ->
+         val title = backstackEntry.arguments?.getString("title") ?: "Default Title"
+
+         ListScreen(
+            title = title, // Pass the title to ListScreen
+            onImageClick = { pet ->
+               navController.navigate("detail_screen/${pet.id}")
+            },
+            onUpClick = {
+               // Navigate back to the "start_screen"
+               navController.navigateUp()  // This will navigate back to the start screen
             }
          )
       }
-      composable<Routes.Detail> { backstackEntry ->
-         val details: Routes.Detail = backstackEntry.toRoute()
 
+      composable("detail_screen/{petId}") { backstackEntry ->
+         val petId = backstackEntry.arguments?.getString("petId")?.toInt() ?: 0
          DetailScreen(
-            petId = details.petId,
+            petId = petId,
             onAdoptClick = {
-               navController.navigate(
-                  Routes.Adopt(details.petId)
-               )
+               navController.navigate("adopt_screen/$petId")
             },
             onUpClick = {
                navController.navigateUp()
             }
          )
       }
-      composable<Routes.Adopt> { backstackEntry ->
-         val adopt: Routes.Adopt = backstackEntry.toRoute()
 
+      composable("adopt_screen/{petId}") { backstackEntry ->
+         val petId = backstackEntry.arguments?.getString("petId")?.toInt() ?: 0
          AdoptScreen(
-            petId = adopt.petId,
+            petId = petId,
             onUpClick = {
                navController.navigateUp()
             }
@@ -102,6 +128,31 @@ fun MorseCoderApp() {
       }
    }
 }
+
+
+@Composable
+fun StartScreen(
+   onNavigateToList: (String) -> Unit
+) {
+   Column(
+      modifier = Modifier
+         .fillMaxSize()
+         .padding(16.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally
+   ) {
+      Button(onClick = { onNavigateToList("Option 1") }) {
+         Text("Go to List - Option 1")
+      }
+
+      Spacer(modifier = Modifier.height(16.dp))
+
+      Button(onClick = { onNavigateToList("Option 2") }) {
+         Text("Go to List - Option 2")
+      }
+   }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,14 +180,18 @@ fun MorseCoderAppBar(
 
 @Composable
 fun ListScreen(
+   title: String,
    onImageClick: (Pet) -> Unit,
    modifier: Modifier = Modifier,
-   viewModel: ListViewModel = viewModel()
+   viewModel: ListViewModel = viewModel(),
+   onUpClick: () -> Unit = { }
 ) {
    Scaffold(
       topBar = {
          MorseCoderAppBar(
-            title = "Find a Friend"
+            title = "Pet List $title",
+            canNavigateBack = true,
+            onUpClick = onUpClick
          )
       }
    ) { innerPadding ->
@@ -164,7 +219,7 @@ fun ListScreen(
 fun PreviewListScreen() {
    MorseCoderTheme {
       ListScreen(
-//         petList = PetDataSource().loadPets(),
+         title = "test title",
          onImageClick = { }
       )
    }
