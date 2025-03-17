@@ -8,13 +8,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.zybooks.petadoption.ui.PetApp
-import com.zybooks.petadoption.ui.theme.PetAdoptionTheme
+import com.zybooks.petadoption.ui.theme.MorseCoderTheme
 
 class MainActivity : ComponentActivity() {
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       setContent {
-         PetAdoptionTheme {
+         MorseCoderTheme {
             Surface(
                modifier = Modifier.fillMaxSize(),
                color = MaterialTheme.colorScheme.background

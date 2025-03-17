@@ -19,6 +19,6 @@ dependencyResolutionManagement {
    }
 }
 
-rootProject.name = "Pet Adoption"
+rootProject.name = "Morse Coder"
 include(":app")
  

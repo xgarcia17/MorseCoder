@@ -40,7 +40,7 @@ import androidx.navigation.toRoute
 import com.zybooks.petadoption.data.Pet
 import com.zybooks.petadoption.data.PetDataSource
 import com.zybooks.petadoption.data.PetGender
-import com.zybooks.petadoption.ui.theme.PetAdoptionTheme
+import com.zybooks.petadoption.ui.theme.MorseCoderTheme
 import kotlinx.serialization.Serializable
 
 sealed class Routes {
@@ -162,7 +162,7 @@ fun ListScreen(
 @Preview
 @Composable
 fun PreviewListScreen() {
-   PetAdoptionTheme {
+   MorseCoderTheme {
       ListScreen(
 //         petList = PetDataSource().loadPets(),
          onImageClick = { }
@@ -236,7 +236,7 @@ fun DetailScreen(
 @Composable
 fun PreviewDetailScreen() {
    val pet = PetDataSource().loadPets()[0]
-   PetAdoptionTheme {
+   MorseCoderTheme {
       DetailScreen(
          petId = pet.id,
          onAdoptClick = { }
@@ -296,7 +296,7 @@ fun AdoptScreen(
 @Composable
 fun PreviewAdoptScreen() {
    val pet = PetDataSource().loadPets()[0]
-   PetAdoptionTheme {
+   MorseCoderTheme {
       AdoptScreen(pet.id)
    }
 }
