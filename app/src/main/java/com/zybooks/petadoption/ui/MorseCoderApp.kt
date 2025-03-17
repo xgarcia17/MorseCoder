@@ -59,7 +59,7 @@ sealed class Routes {
 }
 
 @Composable
-fun PetApp() {
+fun MorseCoderApp() {
    val navController = rememberNavController()
 
    NavHost(
@@ -105,7 +105,7 @@ fun PetApp() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PetAppBar(
+fun MorseCoderAppBar(
    title: String,
    modifier: Modifier = Modifier,
    canNavigateBack: Boolean = false,
@@ -135,7 +135,7 @@ fun ListScreen(
 ) {
    Scaffold(
       topBar = {
-         PetAppBar(
+         MorseCoderAppBar(
             title = "Find a Friend"
          )
       }
@@ -183,7 +183,7 @@ fun DetailScreen(
 
    Scaffold(
       topBar = {
-         PetAppBar(
+         MorseCoderAppBar(
             title = "Details",
             canNavigateBack = true,
             onUpClick = onUpClick
@@ -254,7 +254,7 @@ fun AdoptScreen(
    val pet = viewModel.getPet(petId)
    Scaffold(
       topBar = {
-         PetAppBar(
+         MorseCoderAppBar(
             title = "Thank You!",
             canNavigateBack = true,
             onUpClick = onUpClick
