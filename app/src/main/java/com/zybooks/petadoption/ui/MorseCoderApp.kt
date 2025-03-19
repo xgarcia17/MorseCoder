@@ -28,16 +28,24 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,7 +79,7 @@ fun MorseCoderApp() {
             StartScreen(
                onNavigateToMessagePassing = { title ->
                   // Navigate to the ListScreen with the appropriate title
-                  navController.navigate("list_screen/$title")
+                  navController.navigate("messenger_screen/$title")
                },
                onNavigateToLearner = { title ->
                   // Navigate to the ListScreen with the appropriate title
@@ -79,6 +87,18 @@ fun MorseCoderApp() {
                }
             )
          }
+      }
+
+      composable("messenger_screen/{title}") { backstackEntry ->
+         val title = backstackEntry.arguments?.getString("title") ?: "Default Title"
+
+         MessengerScreen(
+            title = title, // Pass the title to MessengerScreen
+            onUpClick = {
+               // Navigate back to the "start_screen"
+               navController.navigateUp()  // This will navigate back to the start screen
+            }
+         )
       }
 
       composable("list_screen/{title}") { backstackEntry ->
@@ -118,23 +138,6 @@ fun MorseCoderApp() {
             }
          )
       }
-   }
-}
-
-@Composable
-fun SquareButton(
-   text: String,
-   onClick: () -> Unit
-) {
-   Box(
-      modifier = Modifier
-         .size(220.dp)
-         .clip(RoundedCornerShape(16.dp))
-         .background(MaterialTheme.colorScheme.primary)
-         .clickable { onClick() },
-      contentAlignment = Alignment.Center
-   ) {
-      Text(text, color = MaterialTheme.colorScheme.onPrimary)
    }
 }
 
@@ -190,6 +193,8 @@ fun MorseCoderAppBar(
       }
    )
 }
+
+
 
 @Composable
 fun ListScreen(
