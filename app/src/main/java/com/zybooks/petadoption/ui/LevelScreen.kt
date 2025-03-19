@@ -10,7 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -26,7 +26,7 @@ fun LevelScreen(
     onUpClick: () -> Unit = { }
 ) {
     val level = viewModel.getLevel(levelId)
-    var tapDuration by remember { mutableStateOf(0L) }
+    var tapDuration by remember { mutableLongStateOf(-1L) }
 
     Scaffold(
         topBar = {
@@ -50,7 +50,7 @@ fun LevelScreen(
                 )
                 Text(text = level.chars.toString())
 
-                Text(text = "Tap Duration: $tapDuration")
+                Text(text = "Tap Duration: ${getTapType(tapDuration)}")
 
                 Row(Modifier.align(Alignment.CenterHorizontally)) {
                     MorseCodeButton(onTapComplete = { duration ->
@@ -60,4 +60,14 @@ fun LevelScreen(
             }
         }
     }
+}
+
+@Composable
+fun getTapType(duration: Long): String {
+    if (duration < 0) {
+        return ""
+    } else if (duration < 500) {
+        return "Dot"
+    }
+    return "Dash"
 }
