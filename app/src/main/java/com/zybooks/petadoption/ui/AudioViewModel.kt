@@ -2,14 +2,12 @@ package com.zybooks.petadoption.ui
 
 import android.content.Context
 import android.media.AudioAttributes
-import android.media.MediaPlayer
 import android.media.SoundPool
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.ViewModel
 import com.zybooks.petadoption.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -80,14 +78,13 @@ class AudioViewModel : ViewModel() {
         }
     }
 
-    // play the Morse Code translation of a given string
-    fun playStringAudio(context: Context, str: String) {
-        CoroutineScope(Dispatchers.Main).launch {
+    fun playStringAudio(str: String): Job {
+        return CoroutineScope(Dispatchers.Main).launch {
             for (ch in str) {
                 if (ch != ' ') {
                     soundMap[ch]?.let { soundId ->
                         soundPool.play(soundId, 1f, 1f, 0, 0, 0.8f)
-                        delay(1000) // Delay between sounds
+                        delay(1200) // Delay between sounds
                     }
                 } else {
                     delay(1000) // Larger delay for space or unknown character
@@ -96,8 +93,10 @@ class AudioViewModel : ViewModel() {
         }
     }
 
+
     // Release resources when no longer needed
-    fun release() {
+    override fun onCleared() {
+        super.onCleared()
         soundPool.release()
     }
 }

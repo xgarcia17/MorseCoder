@@ -1,11 +1,15 @@
 package com.zybooks.petadoption.ui
 
+import android.content.res.Configuration
+import android.inputmethodservice.Keyboard.Row
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -17,10 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -31,21 +40,19 @@ fun MessengerScreen(
 ) {
     val context = LocalContext.current
     val charLimit = 30
+
     // Declare state to hold the message text
     var message by remember { mutableStateOf("") }
     var charCount by remember { mutableStateOf(0) }
+    var sendingMessage by remember { mutableStateOf(false) }
+
+    val config = LocalConfiguration.current
+    val isLandscape = config.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val audioViewModel = remember { AudioViewModel() }
     LaunchedEffect(Unit) {
         audioViewModel.initializeSoundPool(context)
     }
-
-    // Custom keyboard buttons (characters to be displayed)
-    val keyboardButtons = listOf(
-        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
-        "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
-        "Y", "Z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "
-    )
 
     Scaffold(
         topBar = {
@@ -59,22 +66,34 @@ fun MessengerScreen(
         Column(
             modifier = modifier.padding(innerPadding)
         ) {
-            // Display the current message at the top
-            MessageInBox("$message|")
-
-            Text(
-                text = "Character Count: $charCount/$charLimit",
-                modifier = Modifier.padding(6.dp)
-            )
+            if (!sendingMessage) {
+                // Display the current message at the top
+                MessageInBox("$message|")
+                if (!isLandscape) {
+                    Text(
+                        text = "Character Count: $charCount/$charLimit",
+                        modifier = Modifier.padding(6.dp)
+                    )
+                }
+            } else {
+                Text(
+                    text = "TRANSMITTING MESSAGE",
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .offset(y = 30.dp),
+                    color = MaterialTheme.colorScheme.error,
+                    fontSize = 24.sp
+                )
+            }
 
             Keyboard(
                 onButtonClick = { buttonText ->
                     when (buttonText) {
                         // backspace
-                        "<-" -> {
+                        "Delete" -> {
                             if (message.isNotEmpty()) {
                                 if (message.last() != ' ') {
-                                    charCount --
+                                    charCount--
                                 }
                                 message = message.dropLast(1)
                             }
@@ -87,18 +106,26 @@ fun MessengerScreen(
                         }
                         // submit message
                         "Done" -> {
-                            audioViewModel.playStringAudio(context, message)
-                            message = ""
-                            charCount = 0
-                       }
+                            CoroutineScope(Dispatchers.Main).launch {
+                                sendingMessage = true
+                                charCount = 0
+                                // Wait for the audio to finish playing
+                                val job = audioViewModel.playStringAudio(message)
+                                job.join() // suspend until the audio finishes
+                                sendingMessage = false
+                                message = ""
+                            }
+                        }
+
                         else -> {
                             if (charCount < 30) {
                                 message += buttonText
-                                charCount ++
+                                charCount++
                             }
                         }
                     }
-                }
+                },
+                sendingMessage = sendingMessage
             )
         }
     }
@@ -107,43 +134,63 @@ fun MessengerScreen(
 @Composable
 fun Keyboard(
     modifier: Modifier = Modifier,
-    onButtonClick: (String) -> Unit
+    onButtonClick: (String) -> Unit,
+    sendingMessage: Boolean
 ) {
-    val keyboardRows = listOf(
-        listOf("1", "2", "3", "4", "5"),  // Row 1: Numbers
-        listOf("6", "7", "8", "9", "0"),  // Row 2: Numbers
-        listOf("A", "B", "C", "D", "E"),  // Row 3: Letters
-        listOf("F", "G", "H", "I", "J"),  // Row 4: Letters
-        listOf("K", "L", "M", "N", "O"),  // Row 5: Letters
-        listOf("P", "Q", "R", "S", "T"),  // Row 6: Letters
-        listOf("U", "V", "W", "X", "Y"),  // Row 7: Letters
-        listOf("Z", "Space", "<-"), // Row 8: Special Keys
-        listOf("Done") // Row 9: Finish message
-    )
+    val config = LocalConfiguration.current
+    val isLandscape = config.orientation == Configuration.ORIENTATION_LANDSCAPE
+    var keyboardIndex by remember { mutableStateOf(0) }
 
-    // Create the keyboard UI
+    val keyboardRowsPortrait = listOf(
+        listOf("1", "2", "3", "4", "5"),
+        listOf("6", "7", "8", "9", "0"),
+        listOf("A", "B", "C", "D", "E"),
+        listOf("F", "G", "H", "I", "J"),
+        listOf("K", "L", "M", "N", "O"),
+        listOf("P", "Q", "R", "S", "T"),
+        listOf("U", "V", "W", "X", "Y"),
+        listOf("Z", "Space", "Delete"),
+        listOf("Done")
+    )
+    val keyboardRowsLandscape = listOf(
+        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0"),
+        listOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M"),
+        listOf( "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"),
+        listOf("Delete", "Space", "Done")
+    )
+    val keyboardRows = listOf(keyboardRowsPortrait, keyboardRowsLandscape)
+
+    // Define button widths based on content
+    val defaultWidth = 70
+    var buttonHeight = 70
+    val buttonWidths = mapOf(
+        "Space" to 120,
+        "Delete" to 120,
+        "Done" to 180
+    ) // Create the keyboard UI
     Column(
-        modifier = modifier
-            .padding(16.dp)
-            .fillMaxWidth()
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (isLandscape) {
+            keyboardIndex = 1
+            buttonHeight = 50
+        }
         // Loop through each row and display the buttons
-        keyboardRows.forEach { row ->
+        keyboardRows[keyboardIndex].forEach { row ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
             ) {
                 row.forEach { buttonText ->
-                    var buttonWidth = 70
-                    if (buttonText == "Space") {
-                        buttonWidth = 120
-                    } else if (buttonText == "Done") {
-                        buttonWidth = 180
-                    }
+                    val buttonWidth = buttonWidths[buttonText] ?: defaultWidth
                     KeyButton(
                         onClick = { onButtonClick(buttonText) },
                         text = buttonText,
-                        buttonWidth = buttonWidth
+                        buttonWidth = buttonWidth,
+                        buttonHeight = buttonHeight,
+                        sendingMessage = sendingMessage
                     )
                 }
             }

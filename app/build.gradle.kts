@@ -55,4 +55,5 @@ dependencies {
    implementation(libs.androidx.lifecycle.viewmodel.android)
    implementation(libs.navigation.compose)
    implementation(libs.androidx.ui.tooling.preview.android)
+    implementation(libs.androidx.foundation.layout.android)
 }

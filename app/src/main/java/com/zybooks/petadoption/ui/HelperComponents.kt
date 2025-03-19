@@ -38,19 +38,32 @@ fun SquareButton(
 fun KeyButton(
     text: String,
     onClick: () -> Unit,
-    buttonWidth: Int = 70
+    buttonWidth: Int = 70,
+    buttonHeight: Int = 70,
+    sendingMessage: Boolean
 ) {
+    var color = MaterialTheme.colorScheme.primary
+    if (sendingMessage) {
+        color = MaterialTheme.colorScheme.error
+    }
+
     Box(
         modifier = Modifier
-            .height(70.dp)
+            .height(buttonHeight.dp)
             .width(buttonWidth.dp)
             .clip(RoundedCornerShape(4.dp))
             .padding(4.dp)
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(color)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         Text(text, color = MaterialTheme.colorScheme.onPrimary)
     }
 }
+//@Composable
+//fun isInLandscape(): Boolean {
+//    val config = LocalConfiguration.current
+//    return config.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+//}
+//
