@@ -1,6 +1,9 @@
 package com.zybooks.petadoption.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -18,7 +22,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
@@ -30,6 +37,7 @@ fun MessengerScreen(
     viewModel: ListViewModel = viewModel(),
     onUpClick: () -> Unit = { }
 ) {
+    val charLimit = 30
     // Declare state to hold the message text
     var message by remember { mutableStateOf("") }
     var charCount by remember { mutableStateOf(0) }
@@ -54,14 +62,11 @@ fun MessengerScreen(
             modifier = modifier.padding(innerPadding)
         ) {
             // Display the current message at the top
-            Text(
-                text = "Message: $message|",
-                modifier = Modifier.padding(16.dp)
-            )
+            MessageInBox("$message|")
 
             Text(
-                text = "Char Count: $charCount",
-                modifier = Modifier.padding(16.dp)
+                text = "Character Count: $charCount/$charLimit",
+                modifier = Modifier.padding(6.dp)
             )
 
             Keyboard(
@@ -143,5 +148,23 @@ fun Keyboard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MessageInBox(
+    message: String,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .border(2.dp, MaterialTheme.colorScheme.onPrimaryContainer, RoundedCornerShape(2.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = message,
+        )
     }
 }
