@@ -1,7 +1,5 @@
 package com.zybooks.petadoption.data
 
-import com.zybooks.petadoption.R
-
 class MorseCoderDataSource {
    private val levelList = listOf(
       Level (

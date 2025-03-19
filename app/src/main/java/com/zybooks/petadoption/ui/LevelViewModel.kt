@@ -4,6 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.zybooks.petadoption.data.Level
 import com.zybooks.petadoption.data.MorseCoderDataSource
 
-class DetailViewModel : ViewModel() {
+class LevelViewModel : ViewModel() {
     fun getLevel(id: Int): Level = MorseCoderDataSource().getLevel(id) ?: Level()
 }

@@ -1,6 +1,5 @@
 package com.zybooks.petadoption.ui
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,7 +22,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun LevelScreen(
     levelId: Int,
     modifier: Modifier = Modifier,
-    viewModel: DetailViewModel = viewModel(),
+    viewModel: LevelViewModel = viewModel(),
     onUpClick: () -> Unit = { }
 ) {
     val level = viewModel.getLevel(levelId)
