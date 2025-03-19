@@ -1,7 +1,9 @@
 package com.zybooks.petadoption.ui
 
 import android.content.Context
+import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.ViewModel
@@ -13,76 +15,89 @@ import kotlinx.coroutines.launch
 
 class AudioViewModel : ViewModel() {
 
-    // retrieve the audio file for a given character
-    fun getAudioFile(context: Context, ch: Char): MediaPlayer? {
-        // I would like to dynamically lookup the audio files with getIdentifier(), but
-        // that function is not recommended as it is much slower than looking up
-        // an audio file, such as R.raw.sound_a, directly
-        val resourceID = when (ch) {
-            'A' -> R.raw.sound_a
-            'B' -> R.raw.sound_b
-            'C' -> R.raw.sound_c
-            'D' -> R.raw.sound_d
-            'E' -> R.raw.sound_e
-            'F' -> R.raw.sound_f
-            'G' -> R.raw.sound_g
-            'H' -> R.raw.sound_h
-            'I' -> R.raw.sound_i
-            'J' -> R.raw.sound_j
-            'K' -> R.raw.sound_k
-            'L' -> R.raw.sound_l
-            'M' -> R.raw.sound_m
-            'N' -> R.raw.sound_n
-            'O' -> R.raw.sound_o
-            'P' -> R.raw.sound_p
-            'Q' -> R.raw.sound_q
-            'R' -> R.raw.sound_r
-            'S' -> R.raw.sound_s
-            'T' -> R.raw.sound_t
-            'U' -> R.raw.sound_u
-            'V' -> R.raw.sound_v
-            'W' -> R.raw.sound_w
-            'X' -> R.raw.sound_x
-            'Y' -> R.raw.sound_y
-            'Z' -> R.raw.sound_z
-            '0' -> R.raw.sound_0
-            '1' -> R.raw.sound_1
-            '2' -> R.raw.sound_2
-            '3' -> R.raw.sound_3
-            '4' -> R.raw.sound_4
-            '5' -> R.raw.sound_5
-            '6' -> R.raw.sound_6
-            '7' -> R.raw.sound_7
-            '8' -> R.raw.sound_8
-            '9' -> R.raw.sound_9
-            else -> 0
-        }
-        if (resourceID != 0) {
-            return MediaPlayer.create(context, resourceID)
-        } else {
-            return null
+    private lateinit var soundPool: SoundPool
+    private val soundMap = mutableMapOf<Char, Int>()
+
+    // init the sound pool
+    fun initializeSoundPool(context: Context) {
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build()
+
+        soundPool = SoundPool.Builder()
+            .setMaxStreams(10)
+            .setAudioAttributes(audioAttributes)
+            .build()
+
+        loadAudioFiles(context)
+    }
+
+    // load the audio files when opening the view
+    private fun loadAudioFiles(context: Context) {
+        val charToFileMap = mapOf(
+            'A' to R.raw.sound_a,
+            'B' to R.raw.sound_b,
+            'C' to R.raw.sound_c,
+            'D' to R.raw.sound_d,
+            'E' to R.raw.sound_e,
+            'F' to R.raw.sound_f,
+            'G' to R.raw.sound_g,
+            'H' to R.raw.sound_h,
+            'I' to R.raw.sound_i,
+            'J' to R.raw.sound_j,
+            'K' to R.raw.sound_k,
+            'L' to R.raw.sound_l,
+            'M' to R.raw.sound_m,
+            'N' to R.raw.sound_n,
+            'O' to R.raw.sound_o,
+            'P' to R.raw.sound_p,
+            'Q' to R.raw.sound_q,
+            'R' to R.raw.sound_r,
+            'S' to R.raw.sound_s,
+            'T' to R.raw.sound_t,
+            'U' to R.raw.sound_u,
+            'V' to R.raw.sound_v,
+            'W' to R.raw.sound_w,
+            'X' to R.raw.sound_x,
+            'Y' to R.raw.sound_y,
+            'Z' to R.raw.sound_z,
+            '0' to R.raw.sound_0,
+            '1' to R.raw.sound_1,
+            '2' to R.raw.sound_2,
+            '3' to R.raw.sound_3,
+            '4' to R.raw.sound_4,
+            '5' to R.raw.sound_5,
+            '6' to R.raw.sound_6,
+            '7' to R.raw.sound_7,
+            '8' to R.raw.sound_8,
+            '9' to R.raw.sound_9
+        )
+
+        for ((char, resID) in charToFileMap) {
+            val soundID = soundPool.load(context, resID, 1)
+            soundMap[char] = soundID
         }
     }
 
     // play the Morse Code translation of a given string
     fun playStringAudio(context: Context, str: String) {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             for (ch in str) {
-                val mediaPlayer = getAudioFile(context, ch)
-                if (mediaPlayer != null) {
-                    mediaPlayer.let {
-                        it.start()
-                        it.setOnCompletionListener {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                it.release()
-                            }, 500)
-                        }
+                if (ch != ' ') {
+                    soundMap[ch]?.let { soundId ->
+                        soundPool.play(soundId, 1f, 1f, 0, 0, 0.8f)
+                        delay(1000) // Delay between sounds
                     }
-                    delay(500)
-                } else { // case of space or unknown character
-                    delay(1000)
+                } else {
+                    delay(1000) // Larger delay for space or unknown character
                 }
             }
         }
+    }
+
+    // Release resources when no longer needed
+    fun release() {
+        soundPool.release()
     }
 }

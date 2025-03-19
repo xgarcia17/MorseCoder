@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +27,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun MessengerScreen(
     title: String,
     modifier: Modifier = Modifier,
-    viewModel: AudioViewModel = viewModel(),
     onUpClick: () -> Unit = { }
 ) {
     val context = LocalContext.current
@@ -34,6 +34,11 @@ fun MessengerScreen(
     // Declare state to hold the message text
     var message by remember { mutableStateOf("") }
     var charCount by remember { mutableStateOf(0) }
+
+    val audioViewModel = remember { AudioViewModel() }
+    LaunchedEffect(Unit) {
+        audioViewModel.initializeSoundPool(context)
+    }
 
     // Custom keyboard buttons (characters to be displayed)
     val keyboardButtons = listOf(
@@ -82,8 +87,9 @@ fun MessengerScreen(
                         }
                         // submit message
                         "Done" -> {
-                            viewModel.playStringAudio(context, message)
+                            audioViewModel.playStringAudio(context, message)
                             message = ""
+                            charCount = 0
                        }
                         else -> {
                             if (charCount < 30) {
