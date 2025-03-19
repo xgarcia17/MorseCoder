@@ -40,27 +40,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.zybooks.petadoption.data.Pet
 import com.zybooks.petadoption.data.MorseCoderDataSource
 import com.zybooks.petadoption.data.PetGender
 import com.zybooks.petadoption.ui.theme.MorseCoderTheme
-import kotlinx.serialization.Serializable
 
-sealed class Routes {
-   @Serializable
-   data object List
-
-   @Serializable
-   data class Detail(
-      val petId: Int
-   )
-
-   @Serializable
-   data class Adopt(
-      val petId: Int
-   )
-}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -81,7 +65,11 @@ fun MorseCoderApp() {
             }
          ) {
             StartScreen(
-               onNavigateToList = { title ->
+               onNavigateToMessagePassing = { title ->
+                  // Navigate to the ListScreen with the appropriate title
+                  navController.navigate("list_screen/$title")
+               },
+               onNavigateToLearner = { title ->
                   // Navigate to the ListScreen with the appropriate title
                   navController.navigate("list_screen/$title")
                }
@@ -132,7 +120,8 @@ fun MorseCoderApp() {
 
 @Composable
 fun StartScreen(
-   onNavigateToList: (String) -> Unit
+   onNavigateToMessagePassing: (String) -> Unit,
+   onNavigateToLearner: (String) -> Unit
 ) {
    Column(
       modifier = Modifier
@@ -141,14 +130,14 @@ fun StartScreen(
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally
    ) {
-      Button(onClick = { onNavigateToList("Option 1") }) {
-         Text("Go to List - Option 1")
+      Button(onClick = { onNavigateToMessagePassing("The Control Desk") }) {
+         Text("Message your field agent")
       }
 
       Spacer(modifier = Modifier.height(16.dp))
 
-      Button(onClick = { onNavigateToList("Option 2") }) {
-         Text("Go to List - Option 2")
+      Button(onClick = { onNavigateToLearner("Morse Code Teacher") }) {
+         Text("Learn Morse Code")
       }
    }
 }
@@ -163,7 +152,7 @@ fun MorseCoderAppBar(
    onUpClick: () -> Unit = { },
 ) {
    TopAppBar(
-      title = { Text(title) },
+      title = { Text(title, color = MaterialTheme.colorScheme.onSecondary) },
       colors = TopAppBarDefaults.topAppBarColors(
          containerColor = MaterialTheme.colorScheme.primaryContainer
       ),
@@ -171,7 +160,8 @@ fun MorseCoderAppBar(
       navigationIcon = {
          if (canNavigateBack) {
             IconButton(onClick = onUpClick) {
-               Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+               Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back",
+                  tint = MaterialTheme.colorScheme.onSecondary)
             }
          }
       }
@@ -189,7 +179,7 @@ fun ListScreen(
    Scaffold(
       topBar = {
          MorseCoderAppBar(
-            title = "Pet List $title",
+            title = title,
             canNavigateBack = true,
             onUpClick = onUpClick
          )
