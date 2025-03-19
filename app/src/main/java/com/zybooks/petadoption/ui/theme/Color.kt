@@ -2,9 +2,9 @@ package com.zybooks.petadoption.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val md_theme_light_primary = Color(0xFF006D39)
+val md_theme_light_primary = Color(0xFF595959)
 val md_theme_light_onPrimary = Color(0xFFFFFFFF)
-val md_theme_light_primaryContainer = Color(	0xFF262626)
+val md_theme_light_primaryContainer = Color(0xFF262626)
 val md_theme_light_onPrimaryContainer = Color(0xFF0d0d0d)
 val md_theme_light_secondary = Color(0xFF506353)
 val md_theme_light_onSecondary = Color(0xFFFFFFFF)
@@ -18,7 +18,7 @@ val md_theme_light_error = Color(0xFFBA1A1A)
 val md_theme_light_errorContainer = Color(0xFFFFDAD6)
 val md_theme_light_onError = Color(0xFFFFFFFF)
 val md_theme_light_onErrorContainer = Color(0xFF410002)
-val md_theme_light_background = Color(0xFFFBFDF7)
+val md_theme_light_background = Color(0xFFd9d9d9)
 val md_theme_light_onBackground = Color(0xFF191C19)
 val md_theme_light_surface = Color(0xFFFBFDF7)
 val md_theme_light_onSurface = Color(0xFF191C19)

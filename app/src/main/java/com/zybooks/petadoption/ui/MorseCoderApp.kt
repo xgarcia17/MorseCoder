@@ -2,8 +2,10 @@ package com.zybooks.petadoption.ui
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
@@ -32,6 +35,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -117,6 +121,23 @@ fun MorseCoderApp() {
    }
 }
 
+@Composable
+fun SquareButton(
+   text: String,
+   onClick: () -> Unit
+) {
+   Box(
+      modifier = Modifier
+         .size(220.dp)
+         .clip(RoundedCornerShape(16.dp))
+         .background(MaterialTheme.colorScheme.primary)
+         .clickable { onClick() },
+      contentAlignment = Alignment.Center
+   ) {
+      Text(text, color = MaterialTheme.colorScheme.onPrimary)
+   }
+}
+
 
 @Composable
 fun StartScreen(
@@ -130,15 +151,17 @@ fun StartScreen(
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.CenterHorizontally
    ) {
-      Button(onClick = { onNavigateToMessagePassing("The Control Desk") }) {
-         Text("Message your field agent")
-      }
+      SquareButton(
+         text = "Message your field agent",
+         onClick = { onNavigateToMessagePassing("The Control Desk") }
+      )
 
       Spacer(modifier = Modifier.height(16.dp))
 
-      Button(onClick = { onNavigateToLearner("Morse Code Teacher") }) {
-         Text("Learn Morse Code")
-      }
+      SquareButton(
+         text = "Learn Morse Code",
+         onClick = { onNavigateToLearner("Morse Code Teacher") }
+      )
    }
 }
 
