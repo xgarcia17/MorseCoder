@@ -91,7 +91,7 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
          LearnerScreen(
             title = title, // Pass the title to LearnerScreen
             onButtonClick = { level ->
-               navController.navigate("detail_screen/${level.id}")
+               navController.navigate("level_screen/${level.id}")
             },
             onUpClick = {
                // Navigate back to the "start_screen"
@@ -100,13 +100,10 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
          )
       }
 
-      composable("detail_screen/{levelId}") { backstackEntry ->
+      composable("level_screen/{levelId}") { backstackEntry ->
          val levelId = backstackEntry.arguments?.getString("levelId")?.toInt() ?: 0
-         DetailScreen(
+         LevelScreen(
             levelId = levelId,
-            onAdoptClick = {
-               navController.navigate("adopt_screen/$levelId")
-            },
             onUpClick = {
                navController.navigateUp()
             }
@@ -201,44 +198,6 @@ fun MorseCoderAppBar(
          }
       }
    )
-}
-
-@Composable
-fun DetailScreen(
-   levelId: Int,
-   onAdoptClick: () -> Unit,
-   modifier: Modifier = Modifier,
-   viewModel: DetailViewModel = viewModel(),
-   onUpClick: () -> Unit = { }
-) {
-   val level = viewModel.getLevel(levelId)
-
-   Scaffold(
-      topBar = {
-         MorseCoderAppBar(
-            title = "Level ${level.id}",
-            canNavigateBack = true,
-            onUpClick = onUpClick
-         )
-      }
-   ) { innerPadding ->
-      Column(
-         modifier = modifier.padding(innerPadding)
-      ) {
-         Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = modifier.padding(6.dp)
-         ) {
-            Text(
-               text = level.title,
-               style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-               text = level.chars.toString(),
-            )
-         }
-      }
-   }
 }
 
 @Composable
