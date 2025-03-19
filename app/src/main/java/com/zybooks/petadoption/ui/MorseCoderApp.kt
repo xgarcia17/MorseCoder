@@ -79,7 +79,7 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
                },
                onNavigateToLearner = { title ->
                   // Navigate to the ListScreen with the appropriate title
-                  navController.navigate("list_screen/$title")
+                  navController.navigate("learner_screen/$title")
                }
             )
          }
@@ -97,7 +97,7 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
          )
       }
 
-      composable("list_screen/{title}") { backstackEntry ->
+      composable("learner_screen/{title}") { backstackEntry ->
          val title = backstackEntry.arguments?.getString("title") ?: "Default Title"
 
          ListScreen(
@@ -254,17 +254,6 @@ fun ListScreen(
    }
 }
 
-@Preview
-@Composable
-fun PreviewListScreen() {
-   MorseCoderTheme {
-      ListScreen(
-         title = "test title",
-         onImageClick = { }
-      )
-   }
-}
-
 @Composable
 fun DetailScreen(
    petId: Int,
@@ -327,18 +316,6 @@ fun DetailScreen(
    }
 }
 
-@Preview
-@Composable
-fun PreviewDetailScreen() {
-   val pet = MorseCoderDataSource().loadPets()[0]
-   MorseCoderTheme {
-      DetailScreen(
-         petId = pet.id,
-         onAdoptClick = { }
-      )
-   }
-}
-
 @Composable
 fun AdoptScreen(
    petId: Int,
@@ -384,14 +361,5 @@ fun AdoptScreen(
             Text("Share", modifier = modifier.padding(start = 8.dp))
          }
       }
-   }
-}
-
-@Preview
-@Composable
-fun PreviewAdoptScreen() {
-   val pet = MorseCoderDataSource().loadPets()[0]
-   MorseCoderTheme {
-      AdoptScreen(pet.id)
    }
 }
