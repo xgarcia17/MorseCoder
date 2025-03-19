@@ -17,3 +17,9 @@ data class Pet (
    val description: String = "",
    val imageId: Int = 0
 )
+
+data class Level (
+   val id: Int = 0,
+   val title: String = "",
+   val chars: List<Char> = listOf(),
+)

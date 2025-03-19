@@ -4,5 +4,5 @@ import androidx.lifecycle.ViewModel
 import com.zybooks.petadoption.data.MorseCoderDataSource
 
 class ListViewModel : ViewModel() {
-    val petList = MorseCoderDataSource().loadPets()
+    val levelList = MorseCoderDataSource().loadLevels()
 }

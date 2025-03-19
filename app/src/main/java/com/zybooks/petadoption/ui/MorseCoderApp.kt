@@ -6,7 +6,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,31 +24,22 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.zybooks.petadoption.data.Pet
-import com.zybooks.petadoption.data.MorseCoderDataSource
 import com.zybooks.petadoption.data.PetGender
-import com.zybooks.petadoption.ui.theme.MorseCoderTheme
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -74,11 +62,11 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
          ) {
             StartScreen(
                onNavigateToMessagePassing = { title ->
-                  // Navigate to the ListScreen with the appropriate title
+                  // Navigate to the MessengerScreen with the appropriate title
                   navController.navigate("messenger_screen/$title")
                },
                onNavigateToLearner = { title ->
-                  // Navigate to the ListScreen with the appropriate title
+                  // Navigate to the LearnerScreen with the appropriate title
                   navController.navigate("learner_screen/$title")
                }
             )
@@ -100,10 +88,10 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
       composable("learner_screen/{title}") { backstackEntry ->
          val title = backstackEntry.arguments?.getString("title") ?: "Default Title"
 
-         ListScreen(
-            title = title, // Pass the title to ListScreen
-            onImageClick = { pet ->
-               navController.navigate("detail_screen/${pet.id}")
+         LearnerScreen(
+            title = title, // Pass the title to LearnerScreen
+            onButtonClick = { level ->
+               navController.navigate("detail_screen/${level.id}")
             },
             onUpClick = {
                // Navigate back to the "start_screen"
@@ -112,12 +100,12 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
          )
       }
 
-      composable("detail_screen/{petId}") { backstackEntry ->
-         val petId = backstackEntry.arguments?.getString("petId")?.toInt() ?: 0
+      composable("detail_screen/{levelId}") { backstackEntry ->
+         val levelId = backstackEntry.arguments?.getString("levelId")?.toInt() ?: 0
          DetailScreen(
-            petId = petId,
+            levelId = levelId,
             onAdoptClick = {
-               navController.navigate("adopt_screen/$petId")
+               navController.navigate("adopt_screen/$levelId")
             },
             onUpClick = {
                navController.navigateUp()
@@ -136,7 +124,6 @@ fun MorseCoderApp(orientationViewModel: OrientationViewModel) {
       }
    }
 }
-
 
 @Composable
 fun StartScreen(
@@ -157,14 +144,14 @@ fun StartScreen(
       ) {
          SquareButton(
             text = "Message your field agent",
-            onClick = { onNavigateToMessagePassing("The Control Desk") }
+            onClick = { onNavigateToMessagePassing("The Control Desk") },
          )
 
          Spacer(modifier = Modifier.width(32.dp))
 
          SquareButton(
             text = "Learn Morse Code",
-            onClick = { onNavigateToLearner("Morse Code Teacher") }
+            onClick = { onNavigateToLearner("Morse Code Teacher") },
          )
       }
    } else {
@@ -177,7 +164,7 @@ fun StartScreen(
       ) {
          SquareButton(
             text = "Message your field agent",
-            onClick = { onNavigateToMessagePassing("The Control Desk") }
+            onClick = { onNavigateToMessagePassing("The Control Desk") },
          )
 
          Spacer(modifier = Modifier.height(16.dp))
@@ -186,10 +173,10 @@ fun StartScreen(
             text = "Learn Morse Code",
             onClick = { onNavigateToLearner("Morse Code Teacher") }
          )
+
       }
    }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,59 +203,20 @@ fun MorseCoderAppBar(
    )
 }
 
-
-
-@Composable
-fun ListScreen(
-   title: String,
-   onImageClick: (Pet) -> Unit,
-   modifier: Modifier = Modifier,
-   viewModel: ListViewModel = viewModel(),
-   onUpClick: () -> Unit = { }
-) {
-   Scaffold(
-      topBar = {
-         MorseCoderAppBar(
-            title = title,
-            canNavigateBack = true,
-            onUpClick = onUpClick
-         )
-      }
-   ) { innerPadding ->
-      LazyVerticalGrid(
-         columns = GridCells.Adaptive(minSize = 128.dp),
-         contentPadding = PaddingValues(0.dp),
-         modifier = modifier.padding(innerPadding)
-      ) {
-         items(viewModel.petList) { pet ->
-            Image(
-               painter = painterResource(id = pet.imageId),
-               contentDescription = "${pet.type} ${pet.gender}",
-               modifier = Modifier.clickable(
-                  onClick = { onImageClick(pet) },
-                  onClickLabel = "Select the pet"
-               )
-            )
-         }
-      }
-   }
-}
-
 @Composable
 fun DetailScreen(
-   petId: Int,
+   levelId: Int,
    onAdoptClick: () -> Unit,
    modifier: Modifier = Modifier,
    viewModel: DetailViewModel = viewModel(),
    onUpClick: () -> Unit = { }
 ) {
-   val pet = viewModel.getPet(petId)
-   val gender = if (pet.gender == PetGender.MALE) "Male" else "Female"
+   val level = viewModel.getLevel(levelId)
 
    Scaffold(
       topBar = {
          MorseCoderAppBar(
-            title = "Details",
+            title = "Level ${level.id}",
             canNavigateBack = true,
             onUpClick = onUpClick
          )
@@ -277,39 +225,16 @@ fun DetailScreen(
       Column(
          modifier = modifier.padding(innerPadding)
       ) {
-         Image(
-            painter = painterResource(pet.imageId),
-            contentDescription = pet.name,
-            contentScale = ContentScale.FillWidth
-         )
          Column(
             verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = modifier.padding(6.dp)
          ) {
-            Row(
-               horizontalArrangement = Arrangement.SpaceBetween,
-               verticalAlignment = Alignment.CenterVertically,
-               modifier = modifier.fillMaxWidth()
-            ) {
-               Text(
-                  text = pet.name,
-                  style = MaterialTheme.typography.headlineMedium
-               )
-               Button(onClick = onAdoptClick) {
-                  Text("Adopt Me!")
-               }
-            }
             Text(
-               text = "Gender: $gender",
-               style = MaterialTheme.typography.bodyLarge
+               text = level.title,
+               style = MaterialTheme.typography.headlineMedium
             )
             Text(
-               text = "Age: ${pet.age}",
-               style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-               text = pet.description,
-               style = MaterialTheme.typography.bodyMedium
+               text = level.chars.toString(),
             )
          }
       }

@@ -15,22 +15,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SquareButton(
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    fontSize: Int = 24,
+    height: Int = 220,
+    width: Int = 220
 ) {
     Box(
         modifier = Modifier
-            .size(220.dp)
+            .height(height.dp)
+            .width(width.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(MaterialTheme.colorScheme.primary)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        Text(text, color = MaterialTheme.colorScheme.onPrimary)
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.onPrimary,
+            fontSize = fontSize.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
