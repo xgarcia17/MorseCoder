@@ -236,3 +236,27 @@ fun MorseCodeButton(
         )
     }
 }
+
+@Composable
+fun MorseCodeDot(color: Color) {
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+            .clip(CircleShape)
+            .padding(4.dp)
+            .background(color)
+    )
+}
+
+@Composable
+fun MorseCodeDash(color: Color) {
+    Box(
+        modifier = Modifier
+            .height(30.dp)
+            .width(70.dp)
+            .clip(RoundedCornerShape(2.dp))
+            .padding(4.dp)
+            .fillMaxWidth()
+            .background(color)
+    )
+}
