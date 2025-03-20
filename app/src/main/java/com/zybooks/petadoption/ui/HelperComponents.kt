@@ -176,7 +176,7 @@ fun Keyboard(
 fun MorseCodeButton(
     onTapComplete: (duration: Long) -> Unit,
     modifier: Modifier = Modifier,
-    initialButtonSize: Dp = 160.dp,
+    initialButtonSize: Dp = 200.dp,
     shrinkFactor: Float = 0.99f,
     colorChange: Boolean = true
 ) {
@@ -232,7 +232,31 @@ fun MorseCodeButton(
         Text(
             text = "Tap",
             color = Color.White,
-            style = MaterialTheme.typography.bodyLarge
+            fontSize = 30.sp
         )
     }
+}
+
+@Composable
+fun MorseCodeDot(color: Color) {
+    Box(
+        modifier = Modifier
+            .size(30.dp)
+            .clip(CircleShape)
+            .padding(6.dp)
+            .background(color)
+    )
+}
+
+@Composable
+fun MorseCodeDash(color: Color) {
+    Box(
+        modifier = Modifier
+            .height(30.dp)
+            .width(70.dp)
+            .clip(RoundedCornerShape(2.dp))
+            .padding(6.dp)
+            .fillMaxWidth()
+            .background(color)
+    )
 }
