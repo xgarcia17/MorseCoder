@@ -4,11 +4,16 @@ class MorseCoderDataSource {
    private val levelList = listOf(
       Level (
          id = 1,
+         title = "Try to Tap Morse Code",
+         chars = listOf('T', 'R', 'Y', 'M', 'E')
+      ),
+      Level (
+         id = 2,
          title = "Learn the numbers",
          chars = (0..9).map { it.toString().first() }
       ),
       Level (
-         id = 2,
+         id = 3,
          title = "Learn the alphabet",
          chars = ('A'..'Z').map { it }
       )

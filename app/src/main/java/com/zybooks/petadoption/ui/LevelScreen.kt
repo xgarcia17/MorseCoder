@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -37,7 +38,8 @@ fun LevelScreen(
     curCharCode = viewModel.getCharCode(level.chars[charIndex]).toString()
     var tempChar by remember { mutableStateOf('-') }
     tempChar = curCharCode[charTapIndex]
-    var errInput by remember { mutableStateOf(false) }
+    var levelComplete by remember { mutableStateOf(false) }
+
 
     Scaffold(
         topBar = {
@@ -53,69 +55,79 @@ fun LevelScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier.padding(innerPadding).fillMaxWidth()
             ) {
-                Text(
-                    text = level.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(vertical = 20.dp)
-                )
+                if (levelComplete) {
+                    Text(
+                        text = "LEVEL COMPLETE",
+                        fontSize = 30.sp
+                    )
+                } else {
+                    Text(
+                        text = level.title,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(vertical = 40.dp)
+                    )
 
-                // display the current character to be processed
-                Text(
-                    text = "${level.chars[charIndex]}",
-                    fontSize = 60.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                    // display the current character to be processed
+                    Text(
+                        text = "${level.chars[charIndex]}",
+                        fontSize = 60.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
-                DisplayBarCode(
-                    code = curCharCode,
-                    curIndex = charTapIndex,
-                    err = errInput
-                )
+                    DisplayBarCode(
+                        code = curCharCode,
+                        curIndex = charTapIndex,
+                    )
 
-                Text(text = getTapType(tapDuration))
+                    Text(
+                        text = getTapType(tapDuration),
+                        fontSize = 20.sp
+                    )
 
-                MorseCodeButton(
-                    modifier = Modifier.padding(vertical = 200.dp),
-                    onTapComplete = { duration ->
-                    // if dot and matches 'S'
-                    if (duration in 0..499 && tempChar == 'S') {
-                        // move onto next part of same char
-                        charTapIndex ++
-                        errInput = false
-                    } // if dash and matches 'L'
-                    else if (duration >= 500 && tempChar == 'L') {
-                        // move onto next part of same char
-                        charTapIndex ++
-                        errInput = false
-                    } else {
-                        charTapIndex = 0
-                        errInput = true
-                    }
-                    tapDuration = duration
-                    if (charTapIndex == curCharCode.length) { // finished with character
-                        charIndex ++
-                        charTapIndex = 0
-                        curCharCode = viewModel.getCharCode(level.chars[charIndex]).toString()
-                        tempChar = curCharCode[charTapIndex]
-                        tapDuration = 0
-                    }
-                })
+                    MorseCodeButton(
+                        modifier = Modifier.padding(vertical = 200.dp),
+                        onTapComplete = { duration ->
+                            // if dot and matches 'S'
+                            if (duration in 0..499 && tempChar == 'S') {
+                                // move onto next part of same char
+                                charTapIndex++
+                            } // if dash and matches 'L'
+                            else if (duration >= 500 && tempChar == 'L') {
+                                // move onto next part of same char
+                                charTapIndex++
+                            } else {
+                                charTapIndex = 0
+                            }
+                            tapDuration = duration
+                            if (charTapIndex == curCharCode.length) { // finished with character
+                                charIndex++
+                                charTapIndex = 0
+                                if (charIndex < level.chars.size) {
+                                    curCharCode =
+                                        viewModel.getCharCode(level.chars[charIndex]).toString()
+                                    tempChar = curCharCode[charTapIndex]
+                                    tapDuration = 0
+                                } else {
+                                    levelComplete = true
+                                }
+                            }
+                        })
+                }
             }
     }
 }
 
 @Composable
-fun DisplayBarCode(code: String, curIndex: Int, err: Boolean) {
+fun DisplayBarCode(code: String, curIndex: Int) {
     var count = 0
-    var color = MaterialTheme.colorScheme.primary
-    if (err) color = MaterialTheme.colorScheme.error
+    var color = MaterialTheme.colorScheme.onPrimaryContainer
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(16.dp)
     ) {
         for (ch in code) {
-            if (count >= curIndex) color = MaterialTheme.colorScheme.onPrimaryContainer
+            if (count >= curIndex) color = MaterialTheme.colorScheme.primary
             if (ch == 'S') {
                 MorseCodeDot(color)
             } else {
